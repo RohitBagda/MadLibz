@@ -11,6 +11,7 @@
 		F9CEE50B2BBF9F310093A49D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE50A2BBF9F310093A49D /* ContentView.swift */; };
 		F9CEE50D2BBF9F330093A49D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F9CEE50C2BBF9F330093A49D /* Assets.xcassets */; };
 		F9CEE5102BBF9F330093A49D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F9CEE50F2BBF9F330093A49D /* Preview Assets.xcassets */; };
+		F9CEE5172BC0454A0093A49D /* MadLibsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE5162BC0454A0093A49D /* MadLibsViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +20,7 @@
 		F9CEE50A2BBF9F310093A49D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F9CEE50C2BBF9F330093A49D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F9CEE50F2BBF9F330093A49D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		F9CEE5162BC0454A0093A49D /* MadLibsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MadLibsViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,6 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				F9CEE5082BBF9F310093A49D /* MadLibzApp.swift */,
+				F9CEE5162BC0454A0093A49D /* MadLibsViewModel.swift */,
 				F9CEE50A2BBF9F310093A49D /* ContentView.swift */,
 				F9CEE50C2BBF9F330093A49D /* Assets.xcassets */,
 				F9CEE50E2BBF9F330093A49D /* Preview Content */,
@@ -139,6 +142,7 @@
 			files = (
 				F9CEE50B2BBF9F310093A49D /* ContentView.swift in Sources */,
 				F9CEE5092BBF9F310093A49D /* MadLibzApp.swift in Sources */,
+				F9CEE5172BC0454A0093A49D /* MadLibsViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

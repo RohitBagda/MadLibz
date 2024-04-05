@@ -15,12 +15,19 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 NavigationLink(destination: MadLibsListView(viewModel: viewModel)) {
-                    Text("Show Madlibs")
+                    Capsule()
+                        .fill()
+                        .frame(width: 150, height: 50)
+                        .overlay(
+                            Text("Play MadLibs")
+                                .foregroundStyle(Color.primary)
+                        )
+                        
                 }.onAppear {
                     viewModel.getMadLibs()
                 }
             }
-            .navigationTitle("Let's Play MadLibs!")
+            .navigationBarTitle("Are you Mad?", displayMode: .large)
         }
     }
 }
@@ -29,16 +36,16 @@ struct MadLibsListView: View {
     @ObservedObject var viewModel: MadLibsViewModel
 
     var body: some View {
-        List(viewModel.madLibs, id: \.id) { madLib in
-            
-            NavigationLink(destination: MadLibView(viewModel: viewModel, madLibId: madLib.id)) {
-                Text(madLib.storyTitle)
-            }.onAppear {
-                viewModel.getMadLib(id: madLib.id)
+        VStack {
+            List(viewModel.madLibs, id: \.id) { madLib in
+                
+                NavigationLink(destination: MadLibView(viewModel: viewModel, madLibId: madLib.id)) {
+                    Text(madLib.storyTitle)
+                }.onAppear {
+                    viewModel.getMadLib(id: madLib.id)
+                }
             }
-            
-        }
-        .navigationTitle("MadLibs List")
+        }.navigationBarTitle("MadLibs List", displayMode: .large)
     }
 }
 
@@ -48,116 +55,78 @@ struct MadLibView: View {
      
     @State private var answers: [Int: String] = [:]
 
+    fileprivate func getMadLibQuestions() -> [MadLibQuestion] {
+        return viewModel.madLibQuestions[madLibId]?.questions ?? []
+    }
+    
     var body: some View {
+        ScrollView{
             VStack {
-                let questions = viewModel.madLibQuestions[madLibId]?.questions ?? []
+                Text("Provide answers to the following questions!")
+                let questions = getMadLibQuestions()
                 ForEach(questions, id: \.id) { question in
-                    TextField(question.description, text: Binding(
-                        get: { return answers[question.id] ?? "" },
-                        set: { newValue in answers[question.id] = newValue }
-                    ))
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .scenePadding()
+                    VStack(alignment: .leading) {
+                        if (answers[question.id] != "") {
+                            Text(question.description)
+                        }
+                        TextField(question.description, text: Binding(
+                            get: { return answers[question.id] ?? "" },
+                            set: { newValue in answers[question.id] = newValue }
+                        ))
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                    }.padding(10)
                 }
 
-                Button("Submit") {
-                    // Handle submission of answers
-                    print(answers)
+                if (answers.values.allSatisfy({ answer in answer != ""})) {
+                    Button("Submit") {
+                        // Handle submission of answers
+                        let submission = createMadLibSubmission(answers: answers, madLibId: madLibId)
+                        print(submission)
+                        viewModel.postMadLibSubmission(submission: submission)
+                    }.buttonStyle(CapsuleGrowingButton())
+                    .padding()
                 }
-                .padding()
+                
             }
             .navigationTitle(viewModel.madLibQuestions[madLibId]?.storyTitle ?? "madLib storyTitle")
             .onAppear {
                 // Initialize answers array with empty strings
-                let questions = viewModel.madLibQuestions[madLibId]?.questions ?? []
-                questions.forEach({ question in
-                    answers.updateValue("", forKey: question.id)
-                })
-            }
-        }
-}
-
-class MadLibsViewModel: ObservableObject {
-    @Published var madLibs: [MadLib] = []
-    @Published var madLibQuestions: [Int: MadLibQuestions] = [:]
-    var baseUrl: String = "https://seng5199madlib.azurewebsites.net/api"
-    
-    func getMadLibs() {
-        guard let url = URL(string: "\(baseUrl)/MadLib") else { return }
-        get(from: url) { (result: Result<[MadLib], Error>) in
-            switch result {
-            case .success(let madLibs):
-                DispatchQueue.main.async { self.madLibs = madLibs }
-            case .failure(let error):
-                print("Error fetching MadLib questions: \(error)")
+                let questions = getMadLibQuestions()
+                questions.forEach({ answers.updateValue("", forKey: $0.id) })
             }
         }
     }
     
-    func getMadLib(id: Int) {
-        guard let url = URL(string: "\(baseUrl)/MadLib/\(id)") else { return }
-        get(from: url) { (result: Result<MadLibQuestions, Error>) in
-            switch result {
-            case .success(let madLibQuestions):
-                DispatchQueue.main.async { self.madLibQuestions.updateValue(madLibQuestions, forKey: id) }
-            case .failure(let error):
-                print("Error fetching MadLib questions: \(error)")
-            }
-        }
+    func createMadLibSubmission(answers: [Int: String], madLibId: Int) -> MadLibSubmission {
+        let date = Date()
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions.insert(.withFractionalSeconds)
+        let dateString = formatter.string(from: date)
+        let submission = MadLibSubmission(
+            id: 1000,
+            madLibId: madLibId,
+            username: "rocket",
+            timestamp: dateString,
+            answers: answers.map { MadLibAnswer(id: 100, questionId: $0, answerValue: $1) }
+        )
+        return submission
     }
-
-    
-    func get<T: Codable>(from url: URL, completion: @escaping (Result<T, Error>) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard let data = data, error == nil else {
-                completion(.failure(error ?? URLError(.unknown)))
-                return
-            }
-
-            do {
-                let decodedData = try JSONDecoder().decode(T.self, from: data)
-                DispatchQueue.main.async { completion(.success(decodedData)) }
-            } catch {
-                completion(.failure(error))
-            }
-        }.resume()
-    }
-}
-
-struct MadLib: Codable {
-    let id: Int
-    let storyTitle: String
-}
-
-struct MadLibQuestions: Codable {
-    let id: Int
-    let storyTitle: String
-    let story: String
-    let questions: [MadLibQuestion]
-}
-
-struct MadLibQuestion: Codable {
-    let id: Int
-    let position: Int
-    let description: String
-}
-
-struct MadLibSubmission: Codable {
-    let id: Int
-    let madLibId: Int
-    let username: String
-    let timestamp: String
-    let answers: [MadLibAnswer]
-}
-
-struct MadLibAnswer: Codable {
-    let id: Int
-    let questionId: Int
-    let answerValue: String
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+    }
+}
+
+struct CapsuleGrowingButton: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding()
+            .background(.blue)
+            .foregroundStyle(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 10.0))
+            .scaleEffect(configuration.isPressed ? 1.2 : 1)
+            .animation(.easeOut(duration: 0.2), value: configuration.isPressed)
     }
 }
