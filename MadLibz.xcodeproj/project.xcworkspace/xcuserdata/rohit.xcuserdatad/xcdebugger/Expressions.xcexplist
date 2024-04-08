@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "closure #1 in MadLibsViewModel.post&lt;&#x3c4;_0_0, &#x3c4;_0_1&gt;(data:to:completion:):MadLibsViewModel.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "httpResponse.allHeaderFields">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
