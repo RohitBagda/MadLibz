@@ -9,75 +9,88 @@ import SwiftUI
 
 struct MadLibView: View {
     @ObservedObject var viewModel: MadLibzViewModel
+    var storyTitle: String
     var madLibId: Int
      
     @State private var answers: [Int: String] = [:]
     @State private var madLibResult: String = "Loading..."
-    @State private var showResult: Bool = false
+    @State private var madLibResultIsFetched: Bool = false
+    
+    var body: some View {
+        ScrollView {
+            VStack {
+                Text(storyTitle).padding()
+                Text("Provide answers to the following questions:")
+                displayMadLibQuestionLabels()
+                if (questionsAreAnswered()) { displaySubmitButton() }
+                if (madLibResultIsFetched) { displayResult() }
+            }
+            .onAppear {
+                initializeAnswers()
+            }
+        }
+    }
     
     fileprivate func getMadLibQuestions() -> [MadLibQuestion] {
         return viewModel.madLibQuestions[madLibId]?.questions ?? []
     }
     
-    var body: some View {
-        
-        ScrollView {
-            VStack {
-                Text("Provide answers to the following questions!")
-                let questions = getMadLibQuestions()
-                ForEach(questions, id: \.id) { question in
-                    VStack(alignment: .leading) {
-                        LabeledContent {
-                            TextField("type here", text: Binding(
-                                get: { return answers[question.id] ?? "" },
-                                set: { newValue in answers[question.id] = newValue }
-                            ))
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                        } label: {
-                            Text(question.description)
-                        }
-                    }.padding(.horizontal)
-                }
-                if (answers.values.allSatisfy({ answer in answer != ""})) {
-                    Button(action: {
-                        viewModel.postMadLibSubmission(
-                            submission: createMadLibSubmission(answers: answers, madLibId: madLibId)
-                        )
-                        madLibResult = viewModel.madLibSubmissionResponse[madLibId] ?? "Loading...."
-                        showResult = true
-                    }, label: {
-                        Text("Submit")
-                    })
-                }
-                
-                if (showResult) {
-                    VStack{
-                        Text("Here's your composed MadLib:")
-                        Text(madLibResult).padding(.top)
-                    }.padding()
-                }
-                
-            }
-            .navigationTitle(viewModel.madLibQuestions[madLibId]?.storyTitle ?? "madLib storyTitle")
-            .onAppear {
-                // Initialize answers array with empty strings
-                let questions = getMadLibQuestions()
-                questions.forEach({ answers.updateValue("", forKey: $0.id) })
-            }
+    fileprivate func displayMadLibQuestionLabels() -> ForEach<[MadLibQuestion], Int, some View> {
+        let questions = getMadLibQuestions()
+        return ForEach(questions, id: \.id) { question in
+            VStack(alignment: .leading) {
+                createMadLibQuestionLabel(question: question)
+            }.padding(.horizontal)
         }
     }
     
-    func createMadLibSubmission(answers: [Int: String], madLibId: Int) -> MadLibSubmission {
+    fileprivate func createMadLibQuestionLabel(question: MadLibQuestion) -> LabeledContent<Text, some View> {
+        return LabeledContent {
+            TextField("Type here...", text: Binding(
+                get: { return answers[question.id] ?? "" },
+                set: { newValue in answers[question.id] = newValue }
+            ))
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+        } label: {
+            Text(question.description)
+        }
+    }
+    
+    fileprivate func initializeAnswers() {
+        getMadLibQuestions().forEach({ answers.updateValue("", forKey: $0.id) })
+    }
+    
+    fileprivate func questionsAreAnswered() -> Bool {
+        return answers.values.allSatisfy({ answer in answer != ""})
+    }
+    
+    fileprivate func displaySubmitButton() -> Button<Text> {
+        return Button(action: { submitAnswers() }, label: { Text("Submit") })
+    }
+    
+    fileprivate func submitAnswers() {
+        // Post Answers and fetch MadLib Result
+        let submission = MadLibSubmission(
+            madLibId: madLibId,
+            username: viewModel.username,
+            timestamp: getDate(),
+            answers: answers.map { MadLibAnswer(questionId: $0, answerValue: $1) }
+        )
+        madLibResult = viewModel.postMadLibSubmission(submission: submission) ?? "An Error Occurred"
+        madLibResultIsFetched = true
+    }
+    
+    fileprivate func getDate() -> String {
         let date = Date()
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions.insert(.withFractionalSeconds)
-        let dateString = formatter.string(from: date)
-        let submission = MadLibSubmission(
-            madLibId: madLibId,
-            username: "rocket",
-            timestamp: dateString,
-            answers: answers.map { MadLibAnswer(questionId: $0, answerValue: $1) }
-        )
-        return submission
+        return formatter.string(from: date)
+    }
+    
+    fileprivate func displayResult() -> some View {
+        return VStack{
+            Text("Here's your composed MadLib:")
+            Text(madLibResult).padding(.top)
+        }.padding()
     }
 }

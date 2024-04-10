@@ -13,21 +13,15 @@ func get<T: Codable>(from url: URL, completion: @escaping (Result<T, Error>) -> 
             completion(.failure(error ?? URLError(.unknown)))
             return
         }
-        
-        do {
-            let decodedData = try JSONDecoder().decode(T.self, from: data)
-            DispatchQueue.main.async { completion(.success(decodedData)) }
-        } catch {
-            completion(.failure(error))
-        }
+        decode(data: data, completion: completion)
     }.resume()
 }
 
 func post<T: Codable, R:Codable>(data: T, to url: URL, completion: @escaping (Result<R, Error>) -> Void) {
+    var done = false
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-    var done = false
 
     do {
         let requestJson = try JSONEncoder().encode(data)
@@ -42,23 +36,25 @@ func post<T: Codable, R:Codable>(data: T, to url: URL, completion: @escaping (Re
             completion(.failure(error ?? URLError(.unknown)))
             return
         }
-        
-        // If the expected Response is String don't try decoding as JSON
-        if R.Type.self == String.Type.self {
-            let decodedData = String(data: data,  encoding:String.Encoding.utf8)
-            DispatchQueue.main.async { completion(.success(decodedData as! R)) }
-        } else {
-            // Expected Response Type is a Struct, try decoding as JSON
-            do {
-                let decodedData = try JSONDecoder().decode(R.self, from: data)
-                DispatchQueue.main.async { completion(.success(decodedData)) }
-            } catch {
-                completion(.failure(error))
-            }
-        }
+        decode(data: data, completion: completion)
         done = true
     }.resume()
     
     // Wait for post request to complete before returning;
     repeat { RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1)) } while !done
+}
+
+fileprivate func decode<T: Codable>(data: Data, completion: @escaping (Result<T, Error>) -> Void) {
+    // If the expected Response is String don't try decoding as JSON
+    if T.Type.self == String.Type.self {
+        let decodedData = String(data: data,  encoding:String.Encoding.utf8)
+        DispatchQueue.main.async { completion(.success(decodedData as! T)) }
+    } else {
+        do {
+            let decodedData = try JSONDecoder().decode(T.self, from: data)
+            DispatchQueue.main.async { completion(.success(decodedData)) }
+        } catch {
+            completion(.failure(error))
+        }
+    }
 }

@@ -9,17 +9,21 @@ import SwiftUI
 
 struct MadLibzListView: View {
     @ObservedObject var viewModel: MadLibzViewModel
-
     var body: some View {
         VStack {
             List(viewModel.madLibz, id: \.id) { madLib in
-                
-                NavigationLink(destination: MadLibView(viewModel: viewModel, madLibId: madLib.id)) {
+                NavigationLink(destination: MadLibView(
+                    viewModel: viewModel,
+                    storyTitle: madLib.storyTitle,
+                    madLibId: madLib.id
+                )) {
                     Text(madLib.storyTitle)
                 }.onAppear {
-                    viewModel.getMadLib(id: madLib.id)
+                    if (viewModel.madLibQuestions[madLib.id] == nil) {
+                        viewModel.getMadLibQuestions(id: madLib.id)
+                    }
                 }
             }
-        }.navigationBarTitle("MadLibs List", displayMode: .large)
+        }.navigationBarTitle("MadLibs List", displayMode: .inline)
     }
 }

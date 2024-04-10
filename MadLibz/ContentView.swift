@@ -15,19 +15,32 @@ struct ContentView: View {
         NavigationView {
             VStack {
                 NavigationLink(destination: MadLibzListView(viewModel: viewModel)) {
-                    Capsule()
-                        .fill()
-                        .frame(width: 150, height: 50)
-                        .overlay(
-                            Text("Play MadLibs")
-                                .foregroundStyle(Color.primary)
-                        )
+                    CapsuleView(text: "Play MadLibz")
                 }.onAppear {
                     viewModel.getMadLibs()
                 }
+                
+                NavigationLink(destination: FilledOutMadLibzListView(viewModel: viewModel)) {
+                    CapsuleView(text: "View Completed MadLibz")
+                }.onAppear {
+                    viewModel.getFilledOutMadLibz(username: viewModel.username)
+                }
             }
-            .navigationBarTitle("Are you Mad?", displayMode: .large)
+            .navigationBarTitle("Are you Mad?", displayMode: .inline)
         }
+    }
+}
+
+struct CapsuleView: View {
+    var text: String
+    var body: some View {
+        Capsule()
+            .fill()
+            .frame(width: 250, height: 75)
+            .overlay(
+                Text(text)
+                    .foregroundStyle(Color.primary)
+            )
     }
 }
 
@@ -36,4 +49,3 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
-

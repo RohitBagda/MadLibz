@@ -15,6 +15,9 @@
 		F9CEE5192BC3672E0093A49D /* RestUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE5182BC3672E0093A49D /* RestUtility.swift */; };
 		F9CEE51B2BC367F00093A49D /* MadLibzListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE51A2BC367F00093A49D /* MadLibzListView.swift */; };
 		F9CEE51D2BC368340093A49D /* MadLibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE51C2BC368340093A49D /* MadLibView.swift */; };
+		F9CEE51F2BC62A7C0093A49D /* FilledOutMadLibzListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE51E2BC62A7C0093A49D /* FilledOutMadLibzListView.swift */; };
+		F9CEE5212BC6354E0093A49D /* MadLibzModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE5202BC6354E0093A49D /* MadLibzModel.swift */; };
+		F9CEE5232BC63FDB0093A49D /* FilledOutMadLibView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9CEE5222BC63FDB0093A49D /* FilledOutMadLibView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +30,9 @@
 		F9CEE5182BC3672E0093A49D /* RestUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestUtility.swift; sourceTree = "<group>"; };
 		F9CEE51A2BC367F00093A49D /* MadLibzListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MadLibzListView.swift; sourceTree = "<group>"; };
 		F9CEE51C2BC368340093A49D /* MadLibView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MadLibView.swift; sourceTree = "<group>"; };
+		F9CEE51E2BC62A7C0093A49D /* FilledOutMadLibzListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilledOutMadLibzListView.swift; sourceTree = "<group>"; };
+		F9CEE5202BC6354E0093A49D /* MadLibzModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MadLibzModel.swift; sourceTree = "<group>"; };
+		F9CEE5222BC63FDB0093A49D /* FilledOutMadLibView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilledOutMadLibView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,9 +67,12 @@
 			children = (
 				F9CEE5182BC3672E0093A49D /* RestUtility.swift */,
 				F9CEE5082BBF9F310093A49D /* MadLibzApp.swift */,
+				F9CEE5202BC6354E0093A49D /* MadLibzModel.swift */,
 				F9CEE5162BC0454A0093A49D /* MadLibzViewModel.swift */,
 				F9CEE51A2BC367F00093A49D /* MadLibzListView.swift */,
 				F9CEE51C2BC368340093A49D /* MadLibView.swift */,
+				F9CEE51E2BC62A7C0093A49D /* FilledOutMadLibzListView.swift */,
+				F9CEE5222BC63FDB0093A49D /* FilledOutMadLibView.swift */,
 				F9CEE50A2BBF9F310093A49D /* ContentView.swift */,
 				F9CEE50C2BBF9F330093A49D /* Assets.xcassets */,
 				F9CEE50E2BBF9F330093A49D /* Preview Content */,
@@ -150,10 +159,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9CEE50B2BBF9F310093A49D /* ContentView.swift in Sources */,
+				F9CEE5212BC6354E0093A49D /* MadLibzModel.swift in Sources */,
 				F9CEE5092BBF9F310093A49D /* MadLibzApp.swift in Sources */,
+				F9CEE51F2BC62A7C0093A49D /* FilledOutMadLibzListView.swift in Sources */,
 				F9CEE5192BC3672E0093A49D /* RestUtility.swift in Sources */,
 				F9CEE5172BC0454A0093A49D /* MadLibzViewModel.swift in Sources */,
 				F9CEE51B2BC367F00093A49D /* MadLibzListView.swift in Sources */,
+				F9CEE5232BC63FDB0093A49D /* FilledOutMadLibView.swift in Sources */,
 				F9CEE51D2BC368340093A49D /* MadLibView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
